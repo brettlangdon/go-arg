@@ -16,7 +16,7 @@ func TestWriteUsage(t *testing.T) {
 
 positional arguments:
   input
-  output
+  output                 positional output
 
 options:
   --verbose, -v          verbosity level
@@ -26,7 +26,7 @@ options:
 `
 	var args struct {
 		Input    string   `arg:"positional"`
-		Output   []string `arg:"positional"`
+		Output   []string `arg:"positional,help:positional output"`
 		Verbose  bool     `arg:"-v,help:verbosity level"`
 		Dataset  string   `arg:"help:dataset to use"`
 		Optimize int      `arg:"-O,help:optimization level"`

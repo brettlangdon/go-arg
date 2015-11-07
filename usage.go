@@ -69,18 +69,26 @@ func (p *Parser) WriteHelp(w io.Writer) {
 
 	p.WriteUsage(w)
 
+	// the width of the left column
+	const colWidth = 25
+
 	// write the list of positionals
 	if len(positionals) > 0 {
 		fmt.Fprint(w, "\npositional arguments:\n")
 		for _, spec := range positionals {
-			fmt.Fprintf(w, "  %s\n", spec.long)
+			left := "  " + spec.long
+			fmt.Fprint(w, left)
+			if spec.help != "" {
+				fmt.Fprint(w, strings.Repeat(" ", colWidth-len(left)))
+				fmt.Fprint(w, spec.help)
+			}
+			fmt.Fprint(w, "\n")
 		}
 	}
 
 	// write the list of options
 	if len(options) > 0 {
 		fmt.Fprint(w, "\noptions:\n")
-		const colWidth = 25
 		for _, spec := range options {
 			left := "  " + synopsis(spec, "--"+spec.long)
 			if spec.short != "" {
