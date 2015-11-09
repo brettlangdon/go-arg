@@ -25,11 +25,12 @@
 //		Input string   `arg:"positional"`
 //		Log string     `arg:"positional,required"`
 //		Debug bool     `arg:"-d,help:turn on debug mode"`
+//		Workers int    `arg:"-w,env:WORKERS,help:number of workers to start"`
 //		RealMode bool  `arg:"--real"
 //		Wr io.Writer   `arg:"-"`
 //	}
 //
-// The valid tag strings are `positional`, `required`, and `help`. Further, any tag string
+// The valid tag strings are `positional`, `required`, `env`, and `help`. Further, any tag string
 // that starts with a single hyphen is the short form for an argument (e.g. `./example -d`),
 // and any tag string that starts with two hyphens is the long form for the argument
 // (instead of the field name). Fields can be excluded from processing with `arg:"-"`.
@@ -53,6 +54,7 @@ type spec struct {
 	required   bool
 	positional bool
 	help       string
+	env        string
 	wasPresent bool
 }
 
@@ -158,6 +160,8 @@ func NewParser(dests ...interface{}) (*Parser, error) {
 						spec.positional = true
 					case key == "help":
 						spec.help = value
+					case key == "env":
+						spec.env = value
 					default:
 						return nil, fmt.Errorf("unrecognized tag '%s' on field %s", key, tag)
 					}
@@ -206,6 +210,17 @@ func process(specs []*spec, args []string) error {
 		}
 		if spec.short != "" {
 			optionMap[spec.short] = spec
+		}
+		if spec.env != "" {
+			var value string
+			var found bool
+			value, found = os.LookupEnv(spec.env)
+			if found {
+				err := setScalar(spec.dest, value)
+				if err != nil {
+					return fmt.Errorf("error processing environment variable %s: %v", spec.env, err)
+				}
+			}
 		}
 	}
 
