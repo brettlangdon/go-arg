@@ -359,7 +359,7 @@ func TestMustParse(t *testing.T) {
 
 func TestEnvironmentVariable(t *testing.T) {
 	var args struct {
-		Foo string `arg:"env:FOO"`
+		Foo string `arg:"env"`
 	}
 	os.Setenv("FOO", "bar")
 	os.Args = []string{"example"}
@@ -367,9 +367,19 @@ func TestEnvironmentVariable(t *testing.T) {
 	assert.Equal(t, "bar", args.Foo)
 }
 
-func TestEnvironmentVariableOverride(t *testing.T) {
+func TestEnvironmentVariableOverrideName(t *testing.T) {
 	var args struct {
-		Foo string `arg:"env:FOO"`
+		Foo string `arg:"env:BAZ"`
+	}
+	os.Setenv("BAZ", "bar")
+	os.Args = []string{"example"}
+	MustParse(&args)
+	assert.Equal(t, "bar", args.Foo)
+}
+
+func TestEnvironmentVariableOverrideArgument(t *testing.T) {
+	var args struct {
+		Foo string `arg:"env"`
 	}
 	os.Setenv("FOO", "bar")
 	os.Args = []string{"example", "--foo", "baz"}
@@ -379,7 +389,7 @@ func TestEnvironmentVariableOverride(t *testing.T) {
 
 func TestEnvironmentVariableError(t *testing.T) {
 	var args struct {
-		Foo int `arg:"env:FOO"`
+		Foo int `arg:"env"`
 	}
 	os.Setenv("FOO", "bar")
 	os.Args = []string{"example"}

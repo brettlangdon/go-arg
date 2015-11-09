@@ -25,8 +25,8 @@
 //		Input string   `arg:"positional"`
 //		Log string     `arg:"positional,required"`
 //		Debug bool     `arg:"-d,help:turn on debug mode"`
-//		Workers int    `arg:"-w,env:WORKERS,help:number of workers to start"`
-//		RealMode bool  `arg:"--real"
+//		Workers int    `arg:"-w,env,help:number of workers to start"`
+//		RealMode bool  `arg:"--real,env:REAL_MODE"
 //		Wr io.Writer   `arg:"-"`
 //	}
 //
@@ -161,7 +161,12 @@ func NewParser(dests ...interface{}) (*Parser, error) {
 					case key == "help":
 						spec.help = value
 					case key == "env":
-						spec.env = value
+						// Use override name if provided
+						if value != "" {
+							spec.env = value
+						} else {
+							spec.env = strings.ToUpper(field.Name)
+						}
 					default:
 						return nil, fmt.Errorf("unrecognized tag '%s' on field %s", key, tag)
 					}
