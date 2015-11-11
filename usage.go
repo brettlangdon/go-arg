@@ -79,7 +79,11 @@ func (p *Parser) WriteHelp(w io.Writer) {
 			left := "  " + spec.long
 			fmt.Fprint(w, left)
 			if spec.help != "" {
-				fmt.Fprint(w, strings.Repeat(" ", colWidth-len(left)))
+				if len(left)+2 < colWidth {
+					fmt.Fprint(w, strings.Repeat(" ", colWidth-len(left)))
+				} else {
+					fmt.Fprint(w, "\n"+strings.Repeat(" ", colWidth))
+				}
 				fmt.Fprint(w, spec.help)
 			}
 			fmt.Fprint(w, "\n")
