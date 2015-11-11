@@ -44,3 +44,23 @@ options:
 	p.WriteHelp(&help)
 	assert.Equal(t, expectedHelp, help.String())
 }
+
+func TestUsageLongPositionalWithHelp(t *testing.T) {
+	expectedHelp := `usage: example VERYLONGPOSITIONALWITHHELP
+
+positional arguments:
+  verylongpositionalwithhelp
+                         this positional argument is very long
+`
+	var args struct {
+		VeryLongPositionalWithHelp string `arg:"positional,help:this positional argument is very long"`
+	}
+
+	p, err := NewParser(&args)
+	require.NoError(t, err)
+
+	os.Args[0] = "example"
+	var help bytes.Buffer
+	p.WriteHelp(&help)
+	assert.Equal(t, expectedHelp, help.String())
+}
