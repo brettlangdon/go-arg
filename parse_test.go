@@ -396,3 +396,13 @@ func TestEnvironmentVariableError(t *testing.T) {
 	err := Parse(&args)
 	assert.Error(t, err)
 }
+
+func TestEnvironmentVariableRequired(t *testing.T) {
+	var args struct {
+		Foo string `arg:"env,required"`
+	}
+	os.Setenv("FOO", "bar")
+	os.Args = []string{"example"}
+	MustParse(&args)
+	assert.Equal(t, "bar", args.Foo)
+}
