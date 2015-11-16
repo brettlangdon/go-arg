@@ -9,10 +9,10 @@ import (
 	"strings"
 )
 
-// Fail prints usage information to stdout and exits with non-zero status
+// Fail prints usage information to stderr and exits with non-zero status
 func (p *Parser) Fail(msg string) {
-	p.WriteUsage(os.Stdout)
-	fmt.Println("error:", msg)
+	p.WriteUsage(os.Stderr)
+	fmt.Fprintln(os.Stderr, "error:", msg)
 	os.Exit(-1)
 }
 
@@ -27,10 +27,12 @@ func (p *Parser) WriteUsage(w io.Writer) {
 		}
 	}
 
-	fmt.Fprintf(w, "usage: %s ", filepath.Base(os.Args[0]))
+	fmt.Fprintf(w, "usage: %s", filepath.Base(os.Args[0]))
 
 	// write the option component of the usage message
 	for _, spec := range options {
+		// prefix with a space
+		fmt.Fprint(w, " ")
 		if !spec.required {
 			fmt.Fprint(w, "[")
 		}
@@ -38,18 +40,18 @@ func (p *Parser) WriteUsage(w io.Writer) {
 		if !spec.required {
 			fmt.Fprint(w, "]")
 		}
-		fmt.Fprint(w, " ")
 	}
 
 	// write the positional component of the usage message
 	for _, spec := range positionals {
+		// prefix with a space
+		fmt.Fprint(w, " ")
 		up := strings.ToUpper(spec.long)
 		if spec.multiple {
 			fmt.Fprintf(w, "[%s [%s ...]]", up, up)
 		} else {
 			fmt.Fprint(w, up)
 		}
-		fmt.Fprint(w, " ")
 	}
 	fmt.Fprint(w, "\n")
 }
@@ -101,7 +103,6 @@ func (p *Parser) WriteHelp(w io.Writer) {
 func synopsis(spec *spec, form string) string {
 	if spec.dest.Kind() == reflect.Bool {
 		return form
-	} else {
-		return form + " " + strings.ToUpper(spec.long)
 	}
+	return form + " " + strings.ToUpper(spec.long)
 }
