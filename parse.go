@@ -225,6 +225,7 @@ func process(specs []*spec, args []string) error {
 				if err != nil {
 					return fmt.Errorf("error processing environment variable %s: %v", spec.env, err)
 				}
+				spec.wasPresent = true
 			}
 		}
 	}
