@@ -23,6 +23,7 @@ options:
   --dataset DATASET      dataset to use
   --optimize OPTIMIZE, -O OPTIMIZE
                          optimization level
+  --help, -h             display this help and exit
 `
 	var args struct {
 		Input    string   `arg:"positional"`
@@ -51,6 +52,9 @@ func TestUsageLongPositionalWithHelp(t *testing.T) {
 positional arguments:
   verylongpositionalwithhelp
                          this positional argument is very long
+
+options:
+  --help, -h             display this help and exit
 `
 	var args struct {
 		VeryLongPositionalWithHelp string `arg:"positional,help:this positional argument is very long"`
