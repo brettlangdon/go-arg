@@ -25,6 +25,7 @@ options:
                          optimization level
   --workers WORKERS, -w WORKERS
                          number of workers to start
+  --help, -h             display this help and exit
 `
 	var args struct {
 		Input    string   `arg:"positional"`
