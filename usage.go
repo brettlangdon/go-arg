@@ -5,8 +5,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
+
+// the width of the left column
+const colWidth = 25
 
 // Fail prints usage information to stderr and exits with non-zero status
 func (p *Parser) Fail(msg string) {
@@ -72,7 +76,17 @@ func (p *Parser) WriteHelp(w io.Writer) {
 	if len(positionals) > 0 {
 		fmt.Fprint(w, "\npositional arguments:\n")
 		for _, spec := range positionals {
-			fmt.Fprintf(w, "  %s\n", spec.long)
+			left := "  " + spec.long
+			fmt.Fprint(w, left)
+			if spec.help != "" {
+				if len(left)+2 < colWidth {
+					fmt.Fprint(w, strings.Repeat(" ", colWidth-len(left)))
+				} else {
+					fmt.Fprint(w, "\n"+strings.Repeat(" ", colWidth))
+				}
+				fmt.Fprint(w, spec.help)
+			}
+			fmt.Fprint(w, "\n")
 		}
 	}
 
@@ -87,7 +101,6 @@ func (p *Parser) WriteHelp(w io.Writer) {
 }
 
 func printOption(w io.Writer, spec *spec) {
-	const colWidth = 25
 	left := "  " + synopsis(spec, "--"+spec.long)
 	if spec.short != "" {
 		left += ", " + synopsis(spec, "-"+spec.short)
@@ -100,6 +113,15 @@ func printOption(w io.Writer, spec *spec) {
 			fmt.Fprint(w, "\n"+strings.Repeat(" ", colWidth))
 		}
 		fmt.Fprint(w, spec.help)
+	}
+	// Check if spec.dest is zero value or not
+	// If it isn't a default value have been added
+	v := spec.dest
+	if v.IsValid() {
+		z := reflect.Zero(v.Type())
+		if v.Type().Comparable() && z.Type().Comparable() && v.Interface() != z.Interface() {
+			fmt.Fprintf(w, " [default: %v]", v)
+		}
 	}
 	fmt.Fprint(w, "\n")
 }

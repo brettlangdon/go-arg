@@ -353,8 +353,9 @@ func TestMustParse(t *testing.T) {
 		Foo string
 	}
 	os.Args = []string{"example", "--foo", "bar"}
-	MustParse(&args)
+	parser := MustParse(&args)
 	assert.Equal(t, "bar", args.Foo)
+	assert.NotNil(t, parser)
 }
 
 func TestEnvironmentVariable(t *testing.T) {
