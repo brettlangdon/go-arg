@@ -224,10 +224,7 @@ func process(specs []*spec, args []string) error {
 			optionMap[spec.short] = spec
 		}
 		if spec.env != "" {
-			var value string
-			var found bool
-			value, found = os.LookupEnv(spec.env)
-			if found {
+			if value, found := os.LookupEnv(spec.env); found {
 				err := setScalar(spec.dest, value)
 				if err != nil {
 					return fmt.Errorf("error processing environment variable %s: %v", spec.env, err)
